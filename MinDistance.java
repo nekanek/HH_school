@@ -1,3 +1,8 @@
+/*  
+*   Solving closest pair distance problem with with O(n*logn) divide and conquer algorytm or bruteforcing (for small n).
+*   Given array of point's coordinates is sorted by x and by y. In the main function points are divided by half according to their X coordinate and problem is recursevly solved on both halves of input. After finding current minimum distance (delta) on left anf right parts, splitPairDistance function finds smallest distance between pairs in different halves. It compares only points from different sides which x > middle x - delta and x < middle x + delta (because other points are further away than already found minimum distance). Furthermore, among such points only those are considered which y coordinates are also not further apart than delta.
+*/
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -54,8 +59,10 @@ public class MinDistance {
             if (p.x <= middleX) inputYLeft.add(p);
             else inputYRight.add(p);
         }
+        
         ArrayList<Point> inputXLeft = new ArrayList<>(inputX.subList(0, middleIndex + 1));
         ArrayList<Point> inputXRight = new ArrayList<>(inputX.subList(middleIndex + 1, inputX.size()));
+        // if points to the right of the middle have same x coordinate as middle, such points will be included in inputYLeft, but should be additionally transfered from inputXRight to inputXLeft
         for (int i = middleIndex + 1; i < inputX.size(); i++) {
             if (inputX.get(i).x == middleX) {
                 Point p = inputXRight.remove(0);
@@ -63,6 +70,8 @@ public class MinDistance {
             }
             else break;
         }
+        
+        // if right half is empty, last Point from the left half is transfered to the right half to ensure convergence of recursion
         if (inputXRight.isEmpty()) {
             Point p = inputXLeft.remove(inputXLeft.size()-1);
             inputXRight.add(p);
@@ -100,16 +109,14 @@ public class MinDistance {
     }
     
     private static double bruteforceAllPairs (ArrayList<Point> inputX) {
-        double Current;
-        double Answer = Integer.MAX_VALUE;
+        double Answer = Double.MAX_VALUE;
         for (int i = 0; i < inputX.size(); i++) {
             for (int j = i + 1; j < inputX.size(); j++) {
-                Current = euclidDistance(inputX.get(i), inputX.get(j)); 
-                Answer = Math.min(Current, Answer);
+                Answer = Math.min(euclidDistance(inputX.get(i), inputX.get(j)), Answer);
             }
         }
         return Answer;
-        }
+    }
     
     private static double euclidDistance (Point a, Point b) {
         return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y- b.y, 2));

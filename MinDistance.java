@@ -1,6 +1,7 @@
 /*  
+*   Reads input from file inputDistance.txt
 *   Solving closest pair distance problem with with O(n*logn) divide and conquer algorytm or bruteforcing (for small n).
-*   Given array of point's coordinates is sorted by x and by y. In the main function points are divided by half according to their X coordinate and problem is recursevly solved on both halves of input. After finding current minimum distance (delta) on left anf right parts, splitPairDistance function finds smallest distance between pairs in different halves. It compares only points from different sides which x > middle x - delta and x < middle x + delta (because other points are further away than already found minimum distance). Furthermore, among such points only those are considered which y coordinates are also not further apart than delta.
+*   Given array of point's coordinates is first sorted by x and by y coordinates. In the main function points are divided by half according to their X coordinate and problem is recursevly solved on both halves of input. After finding current minimum distance on left anf right parts, splitPairDistance function finds smallest distance between pairs in different halves - delta. It compares only points from different sides which x coordinate is within delta distance from middle x coordinate which divided two halves (because other points are further away from each other than already found minimum distance - delta). Furthermore, among such points only those are considered which y coordinates are also not further apart than delta.
 */
 
 import java.util.Scanner;

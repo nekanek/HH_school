@@ -1,11 +1,13 @@
+/*  
+*   Reads input from file input.txt
+*   Given task can be solved with modification of algorythm for solving Knapsack problem. In this particular case weights of items (constraints) equal their values (parameter to be maximized). Function fillKnapsack finds set of items which maximizes values given the constraint (in the first case we should fill it half the weight of all items given, in the second - maxWeight equals 100). Since weight equals value for each particular item, fillKnapsack function only takes weights of items which act both as weights and as values of items.
+*   In class Knapsack field itemsInKnapsack stores indexes of items which maximize sum of their values given maxWeight of the knapsack. Indexes correspond to the elements of ArrayList of input values. Solution[] array holds max value found for the knapsack of weight x, where x is array index which ranges from 0 to maxWeight. Therefore, maximum weight (value) of items (not greater than maxWeight) that we can put on either half of balanced weighs equals last element of Solution array. If it equals half of sum of weights of all the items, we can distribute items equally between two parts of weights.
+*/
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-/*  Given task can be solved with the algorythm for solving Knapsack problem. In this particular case weights of items (constraints) equal tehir value (parameter to be maximized). Function fillKnapsack finds set of items which maximizes values given the constraint (in the first case we should fill it half the weight of all items given, in the second - maxWeight equals 100).Since weight equals value for each particular item, fillKnapsack only takes weights of items which act both as weights and as values of items.
-*   In class Knapsack field itemsInKnapsack stores indexes of items which maximize sum of their values given maxWeight of the knapsack. Indexes correspond to the elements of ArrayList of input values. Solution[] array hold max value found for the knapsack of weight x, where x is array index.
-*   
-*/ 
+
 public class Knapsack { 
     
     private ArrayList<Integer> itemsInKnapsack; 

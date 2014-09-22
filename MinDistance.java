@@ -3,13 +3,13 @@
 *   Given array of point's coordinates is sorted by x and by y. In the main function points are divided by half according to their X coordinate and problem is recursevly solved on both halves of input. After finding current minimum distance (delta) on left anf right parts, splitPairDistance function finds smallest distance between pairs in different halves. It compares only points from different sides which x > middle x - delta and x < middle x + delta (because other points are further away than already found minimum distance). Furthermore, among such points only those are considered which y coordinates are also not further apart than delta.
 */
 
+import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 
 public class MinDistance { 
     
@@ -123,14 +123,27 @@ public class MinDistance {
     }
     
     public static void main(String[] args) throws FileNotFoundException {   
-        Scanner in = new Scanner(new File("rs1423.txt")); // inputDistance.txt
+        Scanner in = new Scanner(new File("inputDistance.txt")); 
         ArrayList<Point> inputX = new ArrayList<>(); 
         int x;
         int y;
+        if (!in.hasNextInt()) {
+            throw new IllegalArgumentException("Wrong input!");
+        }
         while (in.hasNext()) {
-            x = in.nextInt();
-            y = in.nextInt();
-            inputX.add(new Point(x,y));
+            if (!in.hasNextInt()) {
+                throw new IllegalArgumentException("Wrong input!");
+            }
+            else {
+                x = in.nextInt();
+                if (!in.hasNextInt()) {
+                    throw new IllegalArgumentException("Wrong input!");
+                }
+                else {
+                    y = in.nextInt();
+                    inputX.add(new Point(x,y));
+                }
+            }
         }
         ArrayList<Point> inputY = new ArrayList<>(inputX);
         

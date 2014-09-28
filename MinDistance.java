@@ -101,7 +101,7 @@ public class MinDistance {
         
         for (Point p : testL) {
             for (Point r : testR) {
-                if (r.y < p.y) continue;
+                if (r.y < p.y - delta) continue;
                 if (r.y > p.y + delta) break;
                 delta = Math.min(delta, euclidDistance(p, r));
             }

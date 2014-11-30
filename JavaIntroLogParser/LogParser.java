@@ -3,6 +3,8 @@
  * Assumpitons: 
  *   - logfile has structure unix_time_stamp, user_id, action (e.g. 123456, 12, login)
  *   - user always logs out before logging in again
+ *   - all users who logged in, logged out
+ *   - logfile actions only contain login and logout actions
 */
 import java.io.File;
 import java.io.FileNotFoundException;

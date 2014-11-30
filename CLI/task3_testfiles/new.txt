@@ -1,0 +1,3 @@
+fileC.log
+new/fileD.log
+fileA.log

@@ -1,5 +1,6 @@
 /* 
- * Implements simple multithreaded chat server. 
+ * Implements simple multithreaded chat server on port 8189. 
+ * Test with telnet as "telnet localhost 8189"
  * Assumpitons: 
  *   - no user id's are preserved, no authentication or other means for client to know message author
  *   - message from one client is delivered to evry connected client (including itself)

@@ -1,10 +1,11 @@
 /* 
  * Takes as input path to file, calculates total time between login and logout for each unique user and outputs it in reversed order.
  * Assumpitons: 
- *   - logfile has structure unix_time_stamp, user_id, action (e.g. 123456, 12, login)
+ *   - logfile has structure unix_time_stamp, user_id, action (e.g. 123456, 12, login), sorted by timestamp
  *   - user always logs out before logging in again
- *   - all users who logged in, logged out
+ *   - all users who logged in, logged out in the log data (and vice versa)
  *   - logfile actions only contain login and logout actions
+ *   - will be used > 20 years => should use long for storing time spent logged in
 */
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,8 +19,8 @@ public class LogParser {
     
     private static class User {
         int id;
-        int timeSpent; // since 1)current unix time is around 1.4mln, 2)10 years ~ 310k of seconds, 3)everyone logs out before logging in again, int should suffice            
-        public User(int id, int timeSpent) {
+        long timeSpent;             
+        public User(int id, long timeSpent) {
             this.id = id;
             this.timeSpent = timeSpent;
         }        
@@ -32,13 +33,13 @@ public class LogParser {
     private static class timeComparator implements Comparator<User> {
         @Override
         public int compare(User a, User b) {
-            return b.timeSpent - a.timeSpent; // reversed order comparator
+            return Long.compare(b.timeSpent, a.timeSpent); //reversed order comparator
         }
     }    
     
     private static HashMap<Integer, User> readLog (String FILE_NAME) throws FileNotFoundException {
         int id;
-        int time;
+        long time;
         String action;
         String LOGIN = "login";
         HashMap<Integer, User> times = new HashMap<>();
@@ -48,7 +49,7 @@ public class LogParser {
         while (input.hasNextLine()) {
             line = new Scanner(input.nextLine());
             line.useDelimiter(",\\p{javaWhitespace}");
-            time = line.nextInt();
+            time = line.nextLong();
             id = line.nextInt();
             action = line.next();
             if (action.equals(LOGIN))
@@ -71,7 +72,7 @@ public class LogParser {
             System.out.println("Results (id, time spent in seconds, time spent in hours(approx)):");
             for (User u : timesSorted) 
                 // since we assume that everyone logs out, do not check here for negative total times
-                System.out.println(u + ",  " + (int) u.timeSpent/SEC2HOURS);            
+                System.out.println(u + ",  " + u.timeSpent/SEC2HOURS);            
         }
         catch (Exception e) {
             System.out.println("Error: Path to file undetermined.\n" +

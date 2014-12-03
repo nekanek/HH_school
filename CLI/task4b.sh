@@ -7,7 +7,7 @@ date="2013-01-18" # date for 4b
 # ======= 4b =========
 echo "\nFor task 4b: "
 
-sorted4b=`awk -v date="$date" '$1==date  && $6~/^\/resume\?id\=1/ {gsub(/ms/,""); print $8; } ' $in | sort`
+sorted4b=`awk -v date="$date" '$1==date  && $6~/^\/resume\?id\=43/ {gsub(/ms/,""); print $8; } ' $in | sort`
 
 count=`echo $sorted4b | wc -w`
 sum=0 

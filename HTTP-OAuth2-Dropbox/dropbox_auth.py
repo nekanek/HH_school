@@ -1,3 +1,6 @@
+# run with $ python dropbox_auth.py
+# access http://localhost:4333/
+
 from flask import Flask, abort, request, session, url_for
 import base64
 import os

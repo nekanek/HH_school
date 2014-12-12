@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# run with $ bash netcat_serv.sh
+# access http://localhost:4333/
+
 mkfifo pipe
 trap "rm -f pipe" EXIT
 while true

@@ -3,11 +3,15 @@ import base64
 import os
 import requests
 import urllib
+from flask_sslify import SSLify
 
 search_for = '.pdf' # change this var to search for specific string in your dropbox folders 
 
 app = Flask(__name__)
 app.secret_key = os.urandom(18)
+
+# if 'DYNO' in os.environ: # only trigger SSLify if the app is running on Heroku
+sslify = SSLify(app)
 
 APP_KEY = 'wqrmyglvuplbzhk';
 APP_SECRET = 'orgv7l2trmk9f4w';

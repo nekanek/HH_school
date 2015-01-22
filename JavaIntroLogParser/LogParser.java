@@ -7,13 +7,16 @@
  *   - logfile actions only contain login and logout actions
  *   - will be used > 20 years => should use long for storing time spent logged in
 */
-import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Scanner;
+import java.nio.charset.Charset;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class LogParser {
     
@@ -37,32 +40,36 @@ public class LogParser {
         }
     }    
     
-    private static HashMap<Integer, User> readLog (String FILE_NAME) throws FileNotFoundException {
+    private static HashMap<Integer, User> readLog (String FILE_NAME) {
         int id;
         long time;
         String action;
         String LOGIN = "login";
+        String CHARSET = "UTF-8";
         HashMap<Integer, User> times = new HashMap<>();
-        Scanner input = new Scanner(new File(FILE_NAME)); 
-        Scanner line;
         
-        while (input.hasNextLine()) {
-            line = new Scanner(input.nextLine());
-            line.useDelimiter(",\\p{javaWhitespace}");
-            time = line.nextLong();
-            id = line.nextInt();
-            action = line.next();
-            if (action.equals(LOGIN))
-                time *= -1; 
-            if (times.containsKey(id))
-                times.get(id).timeSpent += time;
-            else
-                times.put(id, new User(id, time));
+        Charset charset = Charset.forName(CHARSET);
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(FILE_NAME), charset)) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] splits = line.split(",\\p{javaWhitespace}");
+                time = Long.parseLong(splits[0]);
+                id = Integer.parseInt(splits[1]);
+                action = splits[2];
+                if (action.equals(LOGIN))
+                    time *= -1; 
+                if (times.containsKey(id))
+                    times.get(id).timeSpent += time;
+                else
+                    times.put(id, new User(id, time));
+            }
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
         }
         return times; 
     }
-    
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         try {
             String FILE_NAME = args[0];
             int SEC2HOURS = 60*60;
@@ -78,7 +85,6 @@ public class LogParser {
             System.out.println("Error: Path to file undetermined.\n" +
                     "Please, start with path to log file as command-line parameter. E.g.:\n" +
                     "java LogParser /home/username/log\n");
-            e.printStackTrace();
         }
     }
 }

@@ -3,79 +3,121 @@
  * Test with telnet as "telnet localhost 8189"
  * Assumpitons: 
  *   - no user id's are preserved, no authentication or other means for client to know message author
- *   - message from one client is delivered to evry connected client (including itself)
+ *   - message from one client is delivered to every connected client (including itself)
 */
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.net.InetSocketAddress; 
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.Set;
+
 
 public class ChatServer {
-    public static void main(String[] args ) {  
-        try {
-            ArrayList<Socket> connections = new ArrayList<>(1);
-            int i = 0;
-            ServerSocket s = new ServerSocket(8189);
+    private final Selector selector;
+    private final int PORT = 8189;
+    private final String HELLO = "Welcome to chatserver! Enter BYE to exit.\n";
+    byte[] B_HELLO = HELLO.getBytes("UTF-8");
+    byte[] FORMAT = "> ".getBytes("UTF-8");
+    private final ByteBuffer echoBuffer = ByteBuffer.allocate(64);
 
-            while (true) {  
-                Socket incoming = s.accept();
-                System.out.println("User #" + i + " connected");
-                connections.add(incoming);
-                Runnable r = new ThreadedEchoHandler(incoming, connections);
-                Thread t = new Thread(r);
-                t.start();
-                i++;
-            }
-        }
-        catch (IOException e) {  
-            e.printStackTrace();
-        }
+    public ChatServer() throws IOException {
+        Selector selector = Selector.open();
+        this.selector = selector;
+        start();
     }
-}
 
-class ThreadedEchoHandler implements Runnable {
+    public static void main(String[] args ) throws IOException {  
+        new ChatServer();
+    }
     
-    private final Socket incoming;
-    public ArrayList<Socket> connections;
-
-    public ThreadedEchoHandler(Socket s, ArrayList<Socket> c) { 
-        incoming = s;
-        this.connections = c;
+    private void start() {
+        Runnable connections = new ConnectionsHandler();
+        Thread tConnections = new Thread(connections);
+        tConnections.start();
+        Runnable messages = new MessageSender();
+        Thread tMessages = new Thread(messages);
+        tMessages.start();
+        System.out.println("All started");        
     }
 
-    @Override
-    public void run() {  
-        try {  
+    class ConnectionsHandler implements Runnable {
+        @Override
+        public void run() {  
             try {
-                InputStream inStream = incoming.getInputStream();
-                OutputStream outStream = incoming.getOutputStream();
-                Scanner in = new Scanner(inStream);         
-                PrintWriter out = new PrintWriter(outStream, true); // true for autoFlush
-            
-                out.println( "Welcome to chatserver! Enter BYE to exit." );
-            
-                boolean done = false;
-                while (!done && in.hasNextLine()) {  
-                    String line = in.nextLine();
-                    for (Socket s : connections) {
-                        OutputStream sStream = s.getOutputStream();
-                        PrintWriter sOut = new PrintWriter(sStream, true);
-                        sOut.println("> " + line);
+                ServerSocketChannel ssc = ServerSocketChannel.open();
+                ssc.configureBlocking(false);
+                ServerSocket ss = ssc.socket();
+                ss.bind(new InetSocketAddress(PORT));
+
+                while (true) {  
+                    SocketChannel sc = ssc.accept();
+                    if (sc != null) {
+                        sc.configureBlocking(false);
+                        System.out.println("User " + sc + " connected");
+                        sc.register( selector, SelectionKey.OP_READ );
+                        ByteBuffer helloBuffer = ByteBuffer.allocate(50);
+                        helloBuffer.put(B_HELLO);
+                        helloBuffer.flip();
+                        sc.write(helloBuffer);
                     }
-                    System.out.println("Echoed (" + line + ") from " + incoming);
-                    if (line.trim().equals("BYE"))
-                        done = true;
                 }
             }
-            finally {
-                connections.remove(incoming);
-                incoming.close();
-            }
+            catch (IOException e) {}        
         }
-        catch (IOException e) {  
-            e.printStackTrace();
+
+    }
+
+    class MessageSender implements Runnable {
+        @Override
+        public void run() {  
+            try {  
+                while(true) {
+                    int readyChannels = selector.select(100);
+                    if(readyChannels != 0) {
+                        Set<SelectionKey> selectedKeys = selector.selectedKeys();
+
+                        Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
+
+                        while(keyIterator.hasNext()) {
+                            SelectionKey key = (SelectionKey) keyIterator.next();
+                            if ((key.readyOps() & SelectionKey.OP_READ) == SelectionKey.OP_READ) {
+                                SocketChannel sc = (SocketChannel)key.channel();
+                                while (true) {
+                                    echoBuffer.clear();
+                                    int r = sc.read(echoBuffer);
+                                    if (r<=0)
+                                        break;
+                                    echoBuffer.flip();
+                                    String message = new String(echoBuffer.array(), Charset.forName("UTF-8")).trim();
+                                    System.out.println(message);
+                                    if (message.startsWith("BYE")) {
+                                        System.out.println("connection with " + sc + " closed.\n");
+                                        sc.close();
+                                        break;
+                                    }
+                                    else {
+                                        Iterator<SelectionKey> allKeyIterator = selector.keys().iterator();
+                                        while(allKeyIterator.hasNext()) {
+                                            echoBuffer.rewind();
+                                            SocketChannel serverChannel = (SocketChannel) allKeyIterator.next().channel();
+                                            serverChannel.write(echoBuffer);
+                                        }
+                                    }
+                               }
+                               keyIterator.remove();
+                           }
+                       }
+                   }
+               }            
+           }
+           catch (IOException e) {}
         }
     }
 }

@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface EmployerDAO {
 
+    public void dropEmployersTable(VacancyDAO vacancyServ) throws SQLException;
+    
     public void addEmployer(Employer employer) throws SQLException;
 
     public void updateEmployer(Employer employer) throws SQLException;

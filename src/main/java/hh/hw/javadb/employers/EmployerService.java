@@ -15,7 +15,16 @@ public class EmployerService implements EmployerDAO {
     public EmployerService(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
+    
+    // instead of Dropping just deletes all rows in table
+    @Override
+    public void dropEmployersTable(VacancyDAO vacancyServ) throws SQLException {
+        List<Employer> empls = getAllEmployers();
+        for (Employer e : empls) {
+            deleteEmployer(e, vacancyServ);
+        }
+    }
+    
     @Override
     public void addEmployer(Employer employer) throws SQLException {
         Session session = null;
@@ -101,6 +110,7 @@ public class EmployerService implements EmployerDAO {
             tx = session.beginTransaction();
             session.delete(employer);
             vacancyServ.deleteAllEmployersVacancies(employer);
+            // commits only after all vacancies were successfully deleted, otherwise rolls back
             tx.commit();
         } catch (Exception e) {
             if (tx != null) {

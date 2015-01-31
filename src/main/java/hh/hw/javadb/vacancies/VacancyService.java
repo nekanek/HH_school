@@ -49,6 +49,9 @@ public class VacancyService implements VacancyDAO {
             throw new RuntimeException("failed to add vacancy " + vacancy);
 
         }
+        finally {
+            conn.close();
+        }
     }
 
     @Override
@@ -76,6 +79,9 @@ public class VacancyService implements VacancyDAO {
             conn.rollback();
             System.out.println(e.getMessage());
             throw new RuntimeException("failed to update vacancy");
+        }
+        finally {
+            conn.close();
         }
     }
 
@@ -105,9 +111,10 @@ public class VacancyService implements VacancyDAO {
 
     @Override
     public List getAllEmployersVacancies(Employer employer) throws SQLException {
-        try (final Connection connection = dataSource.getConnection()) {
+        
+        try (final Connection conn = dataSource.getConnection()) {
             final String query = "SELECT * FROM vacancies WHERE employer_id = ?";
-            try (final PreparedStatement statement = connection.prepareStatement(query)) {
+            try (final PreparedStatement statement = conn.prepareStatement(query)) {
 
                 statement.setInt(1, employer.getId());
 
@@ -128,6 +135,7 @@ public class VacancyService implements VacancyDAO {
         } catch (SQLException e) {
             throw new RuntimeException("failed to get vacancies for one employer", e);
         }
+
     }
 
     @Override
@@ -141,11 +149,20 @@ public class VacancyService implements VacancyDAO {
                 statement.setInt(1, vacancy.getId());
                 statement.executeUpdate();
             }
+            // uncomment this for exception test
+//            throw new SQLException("exception check"); 
+            // comment this for exception test
             conn.commit();
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            System.out.println("catch in vcanc");
             conn.rollback();
+            System.out.println("vacancies in db: " + getAllVacancies()); 
             System.out.println(e.getMessage());
-            throw new RuntimeException("failed to remove vacancy by id " + vacancy.getId());
+            // uncomment this for exception test
+//            throw new SQLException("exception was catched in vacancies");
+        }
+        finally {
+            conn.close();
         }
 
     }

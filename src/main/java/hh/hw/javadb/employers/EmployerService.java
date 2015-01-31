@@ -4,6 +4,7 @@ import hh.hw.javadb.vacancies.VacancyDAO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -113,9 +114,9 @@ public class EmployerService implements EmployerDAO {
             // commits only after all vacancies were successfully deleted, otherwise rolls back
             tx.commit();
         } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
+            System.out.println("catch in empl");
+            if (tx != null) tx.rollback();
+            System.out.println("employers in db: " + getAllEmployers());
             System.out.println(e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {

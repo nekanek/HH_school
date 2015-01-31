@@ -22,6 +22,7 @@ class Main {
             // clear both tables
             employerService.dropEmployersTable(vacancyServ);
             
+            // CRUD example
             // Create in Hibernate
             Employer e1 = new Employer("Augmented future");
             employerService.addEmployer(e1);
@@ -58,25 +59,40 @@ class Main {
             System.out.println("deleted employer " + e2.getId() + " and all corresponfing vacancies");
             System.out.println("employers in db: " + employerService.getAllEmployers());
             System.out.println("vacancies in db: " + vacancyServ.getAllVacancies()); 
-            
-//            e1 = new Employer("Augmented present");
-//            employerService.addEmployer(e1);
-//            System.out.println("Added employer again");
-//            System.out.println("employers in db: " + employerService.getAllEmployers());
-
-            
-//            vacancyServ.deleteVacancy(coolGuy);
-//            System.out.println("deleted vacancy with id " + coolGuy.getId());
-//            System.out.println("vacancies in db: " + vacancyServ.getAllVacancies());
 
             // Delete in JDBC
             vacancyServ.deleteAllEmployersVacancies(e1);
             System.out.println("deleted all vacancies by employer with id " + e1.getId());
             System.out.println("vacancies in db: " + vacancyServ.getAllVacancies());
+            System.out.println("employers in db: " + employerService.getAllEmployers());
             
             // cleaning up
+            System.out.println("deleted employer with id " + e1.getId());
             employerService.deleteEmployer(e1, vacancyServ);
             System.out.println("employers in db: " + employerService.getAllEmployers());
+            
+            // Testing unroll of commits in transactions
+            /* to test,
+             * - comment CRUD example
+             * - uncomment this example
+             * - uncomment two statements "throw new SQLException("exception check");" in VacancyService.deleteVacancy() method
+             * - also comment conn.commit(); in VacancyService.deleteVacancy() method
+             * ..and it's all because someone didn't learn to do tests properly yet. sorry.(
+            */
+            
+//            Employer e3 = new Employer("AI Black Box");
+//            employerService.addEmployer(e3);
+//            Vacancy jonny = new Vacancy("Data carrier", e3.getId());
+//            vacancyServ.addVacancy(jonny);
+//            Vacancy dolphin = new Vacancy("AI construct friend", e3.getId());
+//            vacancyServ.addVacancy(dolphin);   
+//            
+//            // should see db with employer and two vacancies
+//            employerService.deleteEmployer(e3, vacancyServ);
+//            System.out.println("tried to delete employer with id " + e3.getId() + " (vacancies and employer should still b present in db)");
+//            System.out.println("vacancies in db: " + vacancyServ.getAllVacancies());
+//            System.out.println("employers in db: " + employerService.getAllEmployers());
+            
             
         } finally {
             sessionFactory.close();

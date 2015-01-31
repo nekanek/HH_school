@@ -7,11 +7,9 @@
     <groupId>hh.hw</groupId>
     <artifactId>javadb</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     
     <build>
-         
-         <plugins>
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -32,7 +30,7 @@
                 </configuration>
             </plugin>
 
-         </plugins>         
+        </plugins>         
     </build>
         
     <dependencies>
@@ -48,46 +46,6 @@
             <artifactId>postgresql</artifactId>
             <version>9.3-1102-jdbc41</version>
         </dependency>
-<!--        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.1.Final</version>
-        </dependency>-->
-    
-<!--         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>  -->
-       </dependencies> 
-<!--    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-    </properties>-->
+    </dependencies> 
+
 </project>
-
-
-
-<!--    <dependencies>
-
-
-         Because this is a web app, we also have a dependency on the servlet api. 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-
-         Hibernate uses slf4j for logging, for our purposes here use the simple backend 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
-    </dependencies>
-
-</project>-->

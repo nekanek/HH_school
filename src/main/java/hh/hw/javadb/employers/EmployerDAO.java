@@ -1,5 +1,6 @@
 package hh.hw.javadb.employers;
 
+import hh.hw.javadb.vacancies.VacancyDAO;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,6 +14,6 @@ public interface EmployerDAO {
 
     public List getAllEmployers() throws SQLException;
 
-    public void deleteEmployer(Employer employer) throws SQLException;
+    public void deleteEmployer(Employer employer, VacancyDAO vacancyServ) throws SQLException;
     
 }

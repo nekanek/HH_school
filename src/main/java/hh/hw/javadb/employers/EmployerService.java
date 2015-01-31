@@ -1,5 +1,6 @@
 package hh.hw.javadb.employers;
 
+import hh.hw.javadb.vacancies.VacancyDAO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,9 @@ public class EmployerService implements EmployerDAO {
             session.save(employer);
             tx.commit();
         } catch (Exception e) {
-            if (tx != null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             System.out.println(e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {
@@ -44,7 +47,9 @@ public class EmployerService implements EmployerDAO {
             session.update(employer);
             tx.commit();
         } catch (Exception e) {
-            if (tx != null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             System.out.println(e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {
@@ -88,16 +93,19 @@ public class EmployerService implements EmployerDAO {
     }
 
     @Override
-    public void deleteEmployer(Employer employer) throws SQLException {
+    public void deleteEmployer(Employer employer, VacancyDAO vacancyServ) throws SQLException {
         Session session = null;
         Transaction tx = null;
         try {
             session = sessionFactory.openSession();
             tx = session.beginTransaction();
             session.delete(employer);
+            vacancyServ.deleteAllEmployersVacancies(employer);
             tx.commit();
         } catch (Exception e) {
-            if (tx != null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             System.out.println(e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {

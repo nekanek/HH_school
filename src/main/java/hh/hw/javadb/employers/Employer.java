@@ -16,7 +16,7 @@ import javax.persistence.TemporalType;
 public class Employer {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @GeneratedValue(generator="increment")
 //    @GenericGenerator(name="increment", strategy = "increment")
     @Column(name = "employer_id")
@@ -24,7 +24,7 @@ public class Employer {
 
     @Column(name = "title")
     private String title;
-    
+
     @Column(name = "registration_date", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date regDate;
@@ -39,10 +39,11 @@ public class Employer {
         this.title = title;
         this.regDate = new Date();
     }
-    
+
     public Employer(String title) {
         this(-1, title);
     }
+
     public int getId() {
         return id;
     }
@@ -54,12 +55,11 @@ public class Employer {
     public Date getRegDate() {
         return regDate;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
 
-    
     public void setTitle(String title) {
         this.title = title;
     }
@@ -76,18 +76,15 @@ public class Employer {
 
     @Override
     public int hashCode() {
-        return this.getId(); 
+        return this.getId();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) 
-            return false;
-        if (getClass() != obj.getClass()) 
-            return false;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final Employer other = (Employer) obj;
         return this.id == other.id;
     }
-    
-    
+
 }

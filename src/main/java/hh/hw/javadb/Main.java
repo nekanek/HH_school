@@ -11,7 +11,6 @@ import org.hibernate.SessionFactory;
 class Main {
 
     public static void main(final String[] args) throws IOException, ClassNotFoundException, SQLException {
-        // Hibernate CRU operations
         final SessionFactory sessionFactory = getSessionFactory();
         try {
             final EmployerService employerService = getEmployerService(sessionFactory);
@@ -77,7 +76,7 @@ class Main {
              * - uncomment this example
              * - uncomment two statements "throw new SQLException("exception check");" in VacancyService.deleteVacancy() method
              * - also comment conn.commit(); in VacancyService.deleteVacancy() method
-             * ..and it's all because someone didn't learn to do tests properly yet. sorry.(
+             * ..all that because someone didn't learn to do tests properly yet.(
             */
             
 //            Employer e3 = new Employer("AI Black Box");
@@ -92,8 +91,6 @@ class Main {
 //            System.out.println("tried to delete employer with id " + e3.getId() + " (vacancies and employer should still b present in db)");
 //            System.out.println("vacancies in db: " + vacancyServ.getAllVacancies());
 //            System.out.println("employers in db: " + employerService.getAllEmployers());
-            
-            
         } finally {
             sessionFactory.close();
         }
@@ -103,9 +100,9 @@ class Main {
         return Config.getSessionFactory();
     }
 
-    private static EmployerService getEmployerService(final SessionFactory sessionFactory) {        return new EmployerService(sessionFactory);
+    private static EmployerService getEmployerService(final SessionFactory sessionFactory) {
+        return new EmployerService(sessionFactory);
     }
-
 }
 
 

@@ -7,7 +7,7 @@ public class Vacancy {
     private int employer_id;
 
     public Vacancy(String title, int employer_id) {
-        this(-1, title, employer_id); // ??????
+        this(-1, title, employer_id); 
     }
 
     public Vacancy(int id, String title, int employer_id) {

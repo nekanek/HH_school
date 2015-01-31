@@ -21,14 +21,11 @@ public class VacancyService implements VacancyDAO {
     @Override
     public void addVacancy(Vacancy vacancy) throws SQLException {
         if (vacancy.getId() > 0) {
-            // TODO PROBLEM runtime exception, can we move to compile time?
-            // try commenting out constructor with vacancy_id ?/
             throw new IllegalArgumentException("cannot add vacancy with already assigned id");
         }
         Connection conn = dataSource.getConnection();
         conn.setAutoCommit(false);
         try {
-            
             String query = "INSERT INTO vacancies (title, employer_id) VALUES (?, ?)";
             try (final PreparedStatement statement
                     = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -38,7 +35,7 @@ public class VacancyService implements VacancyDAO {
                 statement.executeUpdate();
                 try (final ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     generatedKeys.next();
-                    vacancy.setId(generatedKeys.getInt(1));  // TODO problem: what if user is already in some set?
+                    vacancy.setId(generatedKeys.getInt(1));  
                 }
             }
             conn.commit();
@@ -47,27 +44,20 @@ public class VacancyService implements VacancyDAO {
             System.out.println(e.getErrorCode());
             System.out.println(e.getMessage());
             throw new RuntimeException("failed to add vacancy " + vacancy);
-
         }
-        finally {
-            conn.close();
-        }
+        finally { conn.close();}
     }
 
     @Override
     public void updateVacancy(Vacancy vacancy) throws SQLException {
         if (vacancy.getId() <= 0) {
-            // TODO PROBLEM runtime exception, can we move to compile time?
-            // try commenting out constructor with vacancy_id ?/
             throw new IllegalArgumentException("cannot update vacancy without id");
         }
         Connection conn = dataSource.getConnection();
         conn.setAutoCommit(false);
         try  {
-
             final String query = "UPDATE vacancies SET title = ?, employer_id = ? WHERE vacancy_id = ?";
             try (final PreparedStatement statement = conn.prepareStatement(query)) {
-
                 statement.setString(1, vacancy.getTitle());
                 statement.setInt(2, vacancy.getEmployer_id());
                 statement.setInt(3, vacancy.getId());
@@ -80,9 +70,7 @@ public class VacancyService implements VacancyDAO {
             System.out.println(e.getMessage());
             throw new RuntimeException("failed to update vacancy");
         }
-        finally {
-            conn.close();
-        }
+        finally { conn.close();}
     }
 
     @Override
@@ -111,13 +99,10 @@ public class VacancyService implements VacancyDAO {
 
     @Override
     public List getAllEmployersVacancies(Employer employer) throws SQLException {
-        
         try (final Connection conn = dataSource.getConnection()) {
             final String query = "SELECT * FROM vacancies WHERE employer_id = ?";
             try (final PreparedStatement statement = conn.prepareStatement(query)) {
-
                 statement.setInt(1, employer.getId());
-
                 try (final ResultSet resultSet = statement.executeQuery();) {
                     List<Vacancy> vacancies = new ArrayList<>();
                     int id;
@@ -143,7 +128,6 @@ public class VacancyService implements VacancyDAO {
         Connection conn = dataSource.getConnection();
         conn.setAutoCommit(false);        
         try {
-
             final String query = "DELETE FROM vacancies WHERE vacancy_id = ?";
             try (final PreparedStatement statement = conn.prepareStatement(query)) {
                 statement.setInt(1, vacancy.getId());
@@ -161,15 +145,11 @@ public class VacancyService implements VacancyDAO {
             // uncomment this for exception test
 //            throw new SQLException("exception was catched in vacancies");
         }
-        finally {
-            conn.close();
-        }
-
+        finally { conn.close();}
     }
 
     @Override
     public void deleteAllEmployersVacancies(Employer employer) throws SQLException {
-
         List<Vacancy> vacancies = getAllEmployersVacancies(employer);
         for (Vacancy v : vacancies) {
             deleteVacancy(v);

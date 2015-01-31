@@ -1,6 +1,8 @@
 /media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/employers/EmployerService.java
 /media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/employers/Employer.java
+/media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/vacancies/VacancyService.java
 /media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/Main.java
 /media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/employers/EmployerDAO.java
+/media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/Config.java
+/media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/vacancies/VacancyDAO.java
 /media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/vacancies/Vacancy.java
-/media/neko/DORIAN/GitRepos/HH_School/HH_homeworks/JDBC/java-db/javadb/src/main/java/hh/hw/javadb/HibernateConfig.java

@@ -1,10 +1,14 @@
 package hh.hw.javadb;
 
+import static hh.hw.javadb.Config.getConnection;
 import hh.hw.javadb.employers.*;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +17,7 @@ import org.hibernate.SessionFactory;
 class Main {
 
     public static void main(final String[] args) throws IOException, ClassNotFoundException, SQLException {
+        // Hibernate CRU operations
         final SessionFactory sessionFactory = getSessionFactory();
         try {
             final EmployerService employerService = getEmployerService(sessionFactory);
@@ -34,10 +39,23 @@ class Main {
         } finally {
             sessionFactory.close();
         }
+        
+        // test example
+        try (Connection conn = getConnection()) {
+            Statement stat = conn.createStatement();
+            stat.executeUpdate("CREATE TABLE Greetings (Message CHAR(20))");
+            stat.executeUpdate("INSERT INTO Greetings VALUES ('Hello, World!')");
+            try (ResultSet result = stat.executeQuery("SELECT * FROM Greetings")) {
+                if (result.next()) {
+                    System.out.println(result.getString(1));
+                }
+            }
+            stat.executeUpdate("DROP TABLE Greetings");
+        }
     }
 
     private static SessionFactory getSessionFactory() {
-        return HibernateConfig.getSessionFactory();
+        return Config.getSessionFactory();
     }
 
     private static EmployerService getEmployerService(final SessionFactory sessionFactory) {

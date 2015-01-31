@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 public class EmployerService implements EmployerDAO {
 
@@ -17,12 +18,14 @@ public class EmployerService implements EmployerDAO {
     @Override
     public void addEmployer(Employer employer) throws SQLException {
         Session session = null;
+        Transaction tx = null;
         try {
             session = sessionFactory.openSession();
-            session.beginTransaction();
+            tx = session.beginTransaction();
             session.save(employer);
-            session.getTransaction().commit();
+            tx.commit();
         } catch (Exception e) {
+            if (tx != null) tx.rollback();
             System.out.println(e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {
@@ -34,12 +37,14 @@ public class EmployerService implements EmployerDAO {
     @Override
     public void updateEmployer(Employer employer) throws SQLException {
         Session session = null;
+        Transaction tx = null;
         try {
             session = sessionFactory.openSession();
-            session.beginTransaction();
+            tx = session.beginTransaction();
             session.update(employer);
-            session.getTransaction().commit();
+            tx.commit();
         } catch (Exception e) {
+            if (tx != null) tx.rollback();
             System.out.println(e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {
@@ -68,7 +73,7 @@ public class EmployerService implements EmployerDAO {
     @Override
     public List getAllEmployers() throws SQLException {
         Session session = null;
-        List<Employer> empls = new ArrayList<Employer>();
+        List<Employer> empls = new ArrayList<>();
         try {
             session = sessionFactory.openSession();
             empls = session.createCriteria(Employer.class).list();
@@ -85,12 +90,14 @@ public class EmployerService implements EmployerDAO {
     @Override
     public void deleteEmployer(Employer employer) throws SQLException {
         Session session = null;
+        Transaction tx = null;
         try {
             session = sessionFactory.openSession();
-            session.beginTransaction();
+            tx = session.beginTransaction();
             session.delete(employer);
-            session.getTransaction().commit();
+            tx.commit();
         } catch (Exception e) {
+            if (tx != null) tx.rollback();
             System.out.println(e.getMessage());
         } finally {
             if (session != null && session.isOpen()) {

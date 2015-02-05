@@ -44,18 +44,18 @@ SELECT * FROM translation
 -- группировка по user_id, поняла что ui=true, видимо, надо брать из таблицы translations
 set search_path = 'hhschool';
 
-select translation_history_id, modification_time,
+SELECT translation_history_id, modification_time,
 h.user_id, site_id, lang, name,
-old_value, new_value from translation_history as h 
+old_value, new_value FROM translation_history AS h 
 INNER JOIN 
-(SELECT user_id, MIN(modification_time) as minTime
+(SELECT user_id, MIN(modification_time) AS minTime
         FROM (
         SELECT * FROM translation_history h 
-               INNER JOIN (SELECT site_id, lang, name as name1 FROM translation WHERE ui = true) t
+               INNER JOIN (SELECT site_id, lang, name AS name1 FROM translation WHERE ui = true) t
                ON  name = name1 AND h.site_id = t.site_id AND h.lang = t.lang) AS q
         GROUP BY user_id
         ORDER BY minTime ASC
-        LIMIT 10) as s
+        LIMIT 10) AS s
 ON s.user_id = h.user_id AND minTime = modification_time
 ORDER BY modification_time ASC
 ;
@@ -64,18 +64,18 @@ ORDER BY modification_time ASC
 -- группировка по name - тут хоть есть результат
 set search_path = 'hhschool';
 
-select translation_history_id, modification_time,
+SELECT translation_history_id, modification_time,
 user_id, site_id, lang, name,
-old_value, new_value from translation_history as h 
+old_value, new_value FROM translation_history AS h 
 INNER JOIN 
-(SELECT name1, MIN(modification_time) as minTime
+(SELECT name1, MIN(modification_time) AS minTime
         FROM (
         SELECT * FROM translation_history h 
                INNER JOIN (SELECT site_id, lang, name as name1 FROM translation WHERE ui = true) t
                ON  name = name1 AND h.site_id = t.site_id AND h.lang = t.lang) AS q
         GROUP BY name1
         ORDER BY minTime ASC
-        LIMIT 10) as s
+        LIMIT 10) AS s
 ON s.name1 = h.name AND minTime = modification_time
 ORDER BY modification_time ASC
 ;

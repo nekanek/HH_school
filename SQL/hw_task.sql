@@ -41,62 +41,41 @@ SELECT * FROM translation
 -- отсортированных по возрастанию modification_time
 
 
--- группировка по user_id, без условия на несуществующее поле ui
--- пришлось перечислить поля вместо *, чтобы в результатах не было повторных колонок q.user_id и q.minTime 
+-- группировка по user_id, поняла что ui=true, видимо, надо брать из таблицы translations
 set search_path = 'hhschool';
-SELECT translation_history_id, modification_time, 
-    t.user_id, site_id, lang, name, 
-    old_value, new_value
 
-    FROM translation_history t RIGHT JOIN 
-
-        (SELECT user_id, MIN(modification_time) as minTime  
-            FROM translation_history as h
-            GROUP BY user_id
-            ORDER BY minTime ASC
-            LIMIT 10
-        ) q
-
-    ON t.user_id = q.user_id AND t.modification_time = q.minTime 
-    ORDER BY modification_time ASC 
+select translation_history_id, modification_time,
+h.user_id, site_id, lang, name,
+old_value, new_value from translation_history as h 
+INNER JOIN 
+(SELECT user_id, MIN(modification_time) as minTime
+        FROM (
+        SELECT * FROM translation_history h 
+               INNER JOIN (SELECT site_id, lang, name as name1 FROM translation WHERE ui = true) t
+               ON  name = name1 AND h.site_id = t.site_id AND h.lang = t.lang) AS q
+        GROUP BY user_id
+        ORDER BY minTime ASC
+        LIMIT 10) as s
+ON s.user_id = h.user_id AND minTime = modification_time
+ORDER BY modification_time ASC
 ;
 
 
 -- группировка по name - тут хоть есть результат
 set search_path = 'hhschool';
-SELECT translation_history_id, modification_time, 
-    user_id, site_id, lang, t.name, 
-    old_value, new_value
 
-    FROM translation_history t RIGHT JOIN 
-
-        (SELECT name, MIN(modification_time) as minTime  
-            FROM translation_history as h
-            GROUP BY name
-            ORDER BY minTime ASC
-            LIMIT 10
-        ) q
-
-    ON t.name = q.name AND t.modification_time = q.minTime 
-    ORDER BY modification_time ASC 
-;
-
--- с условием на несуществующий ui, группировка по user_id 
-set search_path = 'hhschool';
-SELECT translation_history_id, modification_time, 
-    t.user_id, site_id, lang, name, 
-    old_value, new_value, t.ui
-
-    FROM translation_history t RIGHT JOIN 
-
-        (SELECT user_id, MIN(modification_time) as minTime
-            FROM translation_history as h
-            GROUP BY user_id, ui
-            HAVING ui=true 
-            ORDER BY minTime ASC
-            LIMIT 10
-        ) q
-
-    ON t.user_id = q.user_id AND t.modification_time = q.minTime 
-    ORDER BY modification_time ASC 
+select translation_history_id, modification_time,
+user_id, site_id, lang, name,
+old_value, new_value from translation_history as h 
+INNER JOIN 
+(SELECT name1, MIN(modification_time) as minTime
+        FROM (
+        SELECT * FROM translation_history h 
+               INNER JOIN (SELECT site_id, lang, name as name1 FROM translation WHERE ui = true) t
+               ON  name = name1 AND h.site_id = t.site_id AND h.lang = t.lang) AS q
+        GROUP BY name1
+        ORDER BY minTime ASC
+        LIMIT 10) as s
+ON s.name1 = h.name AND minTime = modification_time
+ORDER BY modification_time ASC
 ;
